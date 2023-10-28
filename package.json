@@ -1,0 +1,14 @@
+{
+  "name": "primeraentrega",
+  "version": "1.0.0",
+  "description": "Primera Entrega Backend",
+  "main": "./src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Marcelo Ghio",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
