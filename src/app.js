@@ -1,37 +1,29 @@
 const express = require('express');
-const ProductManager = require('./ProductManager');
+const ProductManager = require('./ProductManager'); // Cambio en la ruta
+const CartManager = require('./CartManager'); // Nueva importación para CartManager
 const app = express();
-const port = 1080;
+const port = 8088;
 
-// Crear una instancia de ProductManager
-const productManager = new ProductManager('products.json');
+// Agregar una ruta de inicio en app.js
+app.get('/', (req, res) => {
+    res.send('¡Bienvenido a la aplicación de gestión de productos y carritos!');
+});
+// Crear una instancia de ProductManager y CartManager
+const productManager = new ProductManager('./products.json'); // Ajustar la ruta
+const cartManager = new CartManager('./carts.json'); // Nueva instancia para CartManager
+
 
 // Configurar middleware para manejar JSON
 app.use(express.json());
 
-// Definir los endpoints
 
-// Endpoint para obtener todos los productos
-app.get('/products', async (req, res) => {
-    const limit = req.query.limit;
-    try {
-        const products = await productManager.getProducts(limit);
-        res.json(products);
-    } catch (error) {
-        res.status(404).json({ error: error.message });
-    }
-});
+// Rutas de productos
+const productRouter = require('./productRouter');
+app.use('/api/products', productRouter(productManager));
 
-// Endpoint para obtener un producto por su ID
-app.get('/products/:pid', async (req, res) => {
-    const productId = parseInt(req.params.pid);
-    try {
-        const product = await productManager.getProductById(productId);
-        res.json(product);
-    } catch (error) {
-        res.status(404).json({ error: error.message });
-    }
-});
+// Rutas de carritos
+const cartRouter = require('./cartRouter');
+app.use('/api/carts', cartRouter(cartManager));
 
 // Iniciar el servidor
 app.listen(port, () => {

@@ -14,7 +14,8 @@ class ProductManager {
             this.products = JSON.parse(data);
             this.updateProductIdCounter();
         } catch (err) {
-            // Si el archivo no existe o esta vacio no se hace nada
+            // Si el archivo no existe o está vacío, se crea un arreglo vacío
+            this.products = [];
         }
     }
 
@@ -30,12 +31,16 @@ class ProductManager {
     }
 
     addProduct(product) {
-        if (!product.title || !product.description || !product.price || !product.thumbnail || !product.code || !product.stock) {
+        if (!product.title || !product.description || !product.price || !product.thumbnail || !product.code || !product.stock || !product.category) {
             throw new Error("Todos los campos son obligatorios.");
         }
 
         if (this.products.some((existingProduct) => existingProduct.code === product.code)) {
             throw new Error("El código del producto ya existe.");
+        }
+
+        if (product.status === undefined) {
+            product.status = true;
         }
 
         product.id = this.productIdCounter++;
@@ -74,7 +79,7 @@ class ProductManager {
     deleteProduct(id) {
         const productIndex = this.products.findIndex((product) => product.id === id);
         if (productIndex === -1) {
-            throw new Error("Producto no encontrado.");
+            throw aError("Producto no encontrado.");
         }
 
         this.products.splice(productIndex, 1);
@@ -83,67 +88,3 @@ class ProductManager {
 }
 
 module.exports = ProductManager;
-
-// Definir una ubicación de archivo para tus pruebas
-const testFilePath = 'testProducts.json';
-
-// Crear una instancia de ProductManager para realizar pruebas
-const productManager = new ProductManager(testFilePath);
-
-// Función de prueba para agregar un producto
-function testAddProduct() {
-    try {
-        const newProduct = {
-            title: 'Nuevo Producto',
-            description: 'Descripción del nuevo producto',
-            price: 19.99,
-            thumbnail: 'new_product.jpg',
-            code: 'NP001',
-            stock: 10,
-        };
-
-        productManager.addProduct(newProduct);
-        console.log('Producto agregado con éxito.');
-    } catch (error) {
-        console.error('Error al agregar el producto:', error.message);
-    }
-}
-
-// Función de prueba para obtener todos los productos
-function testGetProducts() {
-    const products = productManager.getProducts();
-    console.log('Lista de productos:');
-    console.log(products);
-}
-
-// Función de prueba para actualizar un producto
-function testUpdateProduct(productId) {
-    try {
-        const updatedProduct = {
-            title: 'Producto Actualizado',
-            price: 29.99,
-        };
-
-        productManager.updateProduct(productId, updatedProduct);
-        console.log('Producto actualizado con éxito.');
-    } catch (error) {
-        console.error('Error al actualizar el producto:', error.message);
-    }
-}
-
-// Función de prueba para eliminar un producto
-function testDeleteProduct(productId) {
-    try {
-        productManager.deleteProduct(productId);
-        console.log('Producto eliminado con éxito.');
-    } catch (error) {
-        console.error('Error al eliminar el producto:', error.message);
-    }
-}
-
-// Ejecutar pruebas
-// testAddProduct(); // Agregar un nuevo producto
-// testGetProducts(); // Mostrar la lista de productos
-// testUpdateProduct(1); // Actualizar un producto por su ID 
-// testDeleteProduct(1); // Eliminar un producto por su ID 
-// testGetProducts(); // Mostrar la lista de productos actualizada
